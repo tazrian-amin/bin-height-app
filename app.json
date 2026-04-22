@@ -27,18 +27,20 @@
     },
     "plugins": [
       "expo-router",
+      "./plugins/withUsbHost",
       [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#f8f8f8",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#0c0b0b"
           }
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true,
