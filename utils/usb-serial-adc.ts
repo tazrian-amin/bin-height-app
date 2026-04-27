@@ -1,4 +1,4 @@
-import { Platform } from "react-native";
+import { NativeModules, Platform } from "react-native";
 
 export type UsbSerialPort = {
   onReceived: (cb: (event: { data?: unknown }) => void) => { remove: () => void };
@@ -14,8 +14,21 @@ export type UsbDevice = {
   productId?: number;
 };
 
+/**
+ * The library runs `NativeModules.UsbSerialportForAndroid.getConstants()` at
+ * module load. If the native module is missing (Expo Go, or a build without
+ * autolinking), `require()` throws before our code can use exports — so we
+ * must not load the JS package unless the native host is present.
+ */
 export function getUsbSerial(): Record<string, unknown> | null {
   if (Platform.OS !== "android") return null;
+  const host = NativeModules.UsbSerialportForAndroid as
+    | { getConstants?: () => Record<string, string> }
+    | null
+    | undefined;
+  if (host == null || typeof host.getConstants !== "function") {
+    return null;
+  }
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mod = require("react-native-usb-serialport-for-android");

@@ -19,7 +19,13 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT"
+      ],
+      "package": "com.tazrian.binheightapp"
     },
     "web": {
       "output": "static",
@@ -40,11 +46,27 @@
           }
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "react-native-ble-plx",
+        {
+          "modes": [
+            "central"
+          ],
+          "bluetoothAlwaysPermission": "Connect to your HM-10 Bluetooth module to read bin height ADC values.",
+          "isBackgroundEnabled": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f126e655-b625-4bfd-8e18-53036b4044d9"
+      }
     }
   }
 }

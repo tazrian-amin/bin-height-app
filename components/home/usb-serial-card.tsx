@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import {
   ActivityIndicator,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -23,6 +24,8 @@ export type UsbSerialCardProps = {
   onConnect: () => void;
   onDisconnect: () => void;
   onCancelAutoReconnect: () => void;
+  /** When set, shows a tappable list so the user can pick which USB serial device to use. */
+  onSelectDevice?: (deviceId: number) => void;
 };
 
 export function UsbSerialCard({
@@ -35,6 +38,7 @@ export function UsbSerialCard({
   onConnect,
   onDisconnect,
   onCancelAutoReconnect,
+  onSelectDevice,
 }: UsbSerialCardProps) {
   const scheme = useColorScheme() ?? "light";
   const palette = Colors[scheme];
@@ -168,9 +172,55 @@ export function UsbSerialCard({
             ? `${selectedDevice.deviceId}${selectedDevice.productName ? ` • ${selectedDevice.productName}` : ""}`
             : devices.length === 0
               ? "None (no devices)"
-              : "None"}
+              : onSelectDevice != null
+                ? "None — tap a row below after refresh"
+                : "None"}
         </ThemedText>
       </ThemedText>
+
+      {onSelectDevice != null && devices.length > 0 ? (
+        <>
+          <ThemedText type="defaultSemiBold" style={styles.listTitle}>
+            USB devices
+          </ThemedText>
+          <ScrollView
+            style={styles.list}
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+          >
+            {devices.map((d) => {
+              const active = d.deviceId === selectedDeviceId;
+              return (
+                <Pressable
+                  key={d.deviceId}
+                  onPress={() => onSelectDevice(d.deviceId)}
+                  style={[
+                    styles.deviceRow,
+                    {
+                      borderColor: active ? palette.accent : palette.border,
+                      backgroundColor: active
+                        ? scheme === "dark"
+                          ? "rgba(76, 177, 229, 0.12)"
+                          : "rgba(76, 177, 229, 0.14)"
+                        : "transparent",
+                    },
+                  ]}
+                >
+                  <ThemedText type="defaultSemiBold">
+                    {d.productName ?? d.deviceName ?? "USB serial device"}
+                  </ThemedText>
+                  <ThemedText style={styles.deviceMeta}>
+                    ID {d.deviceId}
+                    {d.vendorId != null && d.productId != null
+                      ? ` • VID ${d.vendorId} PID ${d.productId}`
+                      : ""}
+                  </ThemedText>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </>
+      ) : null}
 
       <ThemedText style={styles.muted}>
         Status:{" "}
@@ -265,5 +315,23 @@ const styles = StyleSheet.create({
   cancelButton: {
     alignSelf: "flex-start",
     backgroundColor: "transparent",
+  },
+  listTitle: {
+    marginTop: 4,
+  },
+  list: {
+    maxHeight: 200,
+  },
+  deviceRow: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    marginBottom: 8,
+    gap: 4,
+  },
+  deviceMeta: {
+    fontSize: 11,
+    opacity: 0.65,
   },
 });

@@ -338,6 +338,20 @@ export function useUsbAdcSerial() {
     await openPortForDevice(selectedDeviceId, { silent: false });
   }, [clearReconnectTimer, openPortForDevice, selectedDeviceId]);
 
+  /** Opens the port for a specific device id (for tap-to-connect without waiting on React state). */
+  const connectToDeviceId = useCallback(
+    async (deviceId: number) => {
+      if (Platform.OS !== "android") return;
+      clearReconnectTimer();
+      setIsReconnecting(false);
+      reconnectAttemptRef.current = 0;
+      userStoppedSessionRef.current = false;
+      setSelectedDeviceId(deviceId);
+      await openPortForDevice(deviceId, { silent: false });
+    },
+    [clearReconnectTimer, openPortForDevice],
+  );
+
   const scheduleReconnectAttempt = useCallback(() => {
     if (Platform.OS !== "android") return;
     if (userStoppedSessionRef.current) return;
@@ -413,7 +427,7 @@ export function useUsbAdcSerial() {
   }, [adcDb]);
 
   useEffect(() => {
-    void refreshDevices();
+    void refreshDevices({ silent: true });
     return () => {
       disconnect();
     };
@@ -497,6 +511,7 @@ export function useUsbAdcSerial() {
     latestAdc,
     refreshDevices,
     connect,
+    connectToDeviceId,
     disconnect,
     cancelAutoReconnect,
   };
