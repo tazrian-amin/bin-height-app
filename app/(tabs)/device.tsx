@@ -1,17 +1,18 @@
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { LatestAdcCard } from "@/components/home/latest-adc-card";
 import { MiningSentryBrandHeader } from "@/components/mining-sentry-brand-header";
-import { ThemedText } from "@/components/themed-text";
 import { useBinHeightTransport } from "@/contexts/bin-height-transport-context";
 import { useThemeColor } from "@/hooks/use-theme-color";
 
 export default function DeviceScreen() {
   const { displaySource, displayLatestAdc } = useBinHeightTransport();
   const screenBg = useThemeColor({}, "background");
-  const sourceLabel = displaySource === "usb" ? "USB (wired)" : "Bluetooth";
+  const iconColor = useThemeColor({}, "text");
+  const isWireless = displaySource === "ble";
 
   return (
     <SafeAreaView
@@ -19,12 +20,17 @@ export default function DeviceScreen() {
       edges={["top", "left", "right"]}
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <MiningSentryBrandHeader subtitle="Live reading" />
-        <View style={styles.meta}>
-          <ThemedText style={styles.metaText}>
-            Source: {sourceLabel}. To change link or device, open Configure.
-          </ThemedText>
-        </View>
+        <MiningSentryBrandHeader
+          subtitle="Live reading"
+          subtitleLeading={
+            <MaterialIcons
+              name={isWireless ? "bluetooth" : "usb"}
+              size={22}
+              color={iconColor}
+              accessibilityLabel={isWireless ? "Bluetooth connection" : "USB connection"}
+            />
+          }
+        />
         <LatestAdcCard latestAdc={displayLatestAdc} />
       </ScrollView>
     </SafeAreaView>
@@ -39,14 +45,5 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
     paddingBottom: 24,
-  },
-  meta: {
-    marginBottom: 4,
-  },
-  metaText: {
-    textAlign: "center",
-    opacity: 0.78,
-    fontSize: 13,
-    lineHeight: 18,
   },
 });

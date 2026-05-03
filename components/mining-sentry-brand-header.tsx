@@ -1,4 +1,4 @@
-import React from "react";
+import React, { type ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
@@ -9,10 +9,13 @@ import { useThemeColor } from "@/hooks/use-theme-color";
 type MiningSentryBrandHeaderProps = {
   /** Shown under the brand line (e.g. screen context). */
   subtitle?: string;
+  /** Optional icon or adornment rendered before subtitle text (e.g. transport). */
+  subtitleLeading?: ReactNode;
 };
 
 export function MiningSentryBrandHeader({
   subtitle,
+  subtitleLeading,
 }: MiningSentryBrandHeaderProps) {
   const scheme = useColorScheme() ?? "light";
   const palette = Colors[scheme];
@@ -42,9 +45,12 @@ export function MiningSentryBrandHeader({
       </View>
       <ThemedText style={styles.tagline}>Bin Height Measurement</ThemedText>
       {subtitle ? (
-        <ThemedText type="defaultSemiBold" style={styles.subtitle}>
-          {subtitle}
-        </ThemedText>
+        <View style={styles.subtitleRow}>
+          {subtitleLeading}
+          <ThemedText type="defaultSemiBold" style={styles.subtitle}>
+            {subtitle}
+          </ThemedText>
+        </View>
       ) : null}
     </View>
   );
@@ -75,10 +81,17 @@ const styles = StyleSheet.create({
     opacity: 0.82,
     textAlign: "center",
   },
+  subtitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 2,
+  },
   subtitle: {
     fontSize: 15,
     textAlign: "center",
-    marginTop: 2,
     opacity: 0.95,
   },
 });

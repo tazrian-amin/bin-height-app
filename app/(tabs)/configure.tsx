@@ -395,6 +395,30 @@ export default function ConfigureScreen() {
               : "Bluetooth: discovers nearby BLE modules (e.g. HM-10). Tap a row to connect."}
         </ThemedText>
 
+        {showUsbCard ? (
+          <ConfigureConnectionStatusCard
+            title={usbCardTitle}
+            subtitle={usbCardSubtitle}
+            status={usbCardStatus}
+            isUsb
+            onStopReconnect={onUsbStopReconnect}
+            onReconnect={onUsbReconnect}
+            onDisconnectSession={onUsbDisconnectSession}
+          />
+        ) : null}
+
+        {showBleCard ? (
+          <ConfigureConnectionStatusCard
+            title={bleCardTitle}
+            subtitle={bleCardSubtitle}
+            status={bleCardStatus}
+            isUsb={false}
+            onStopReconnect={onBleStopReconnect}
+            onReconnect={onBleReconnect}
+            onDisconnectSession={onBleDisconnectSession}
+          />
+        ) : null}
+
         <ThemedText type="defaultSemiBold" style={styles.listHeading}>
           Available devices
         </ThemedText>
@@ -441,30 +465,6 @@ export default function ConfigureScreen() {
             );
           })
         )}
-
-        {showUsbCard ? (
-          <ConfigureConnectionStatusCard
-            title={usbCardTitle}
-            subtitle={usbCardSubtitle}
-            status={usbCardStatus}
-            isUsb
-            onStopReconnect={onUsbStopReconnect}
-            onReconnect={onUsbReconnect}
-            onDisconnectSession={onUsbDisconnectSession}
-          />
-        ) : null}
-
-        {showBleCard ? (
-          <ConfigureConnectionStatusCard
-            title={bleCardTitle}
-            subtitle={bleCardSubtitle}
-            status={bleCardStatus}
-            isUsb={false}
-            onStopReconnect={onBleStopReconnect}
-            onReconnect={onBleReconnect}
-            onDisconnectSession={onBleDisconnectSession}
-          />
-        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
