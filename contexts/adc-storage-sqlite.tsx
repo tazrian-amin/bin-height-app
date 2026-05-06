@@ -5,7 +5,11 @@ import {
   type SQLiteDatabase,
 } from "expo-sqlite";
 
-import { AdcDatabaseContext, type AdcDatabaseApi } from "@/contexts/adc-database-context";
+import {
+  AdcDatabaseContext,
+  type AdcDatabaseApi,
+  type AdcReading,
+} from "@/contexts/adc-database-context";
 
 const ADC_DB_NAME = "bin-height.db";
 
@@ -37,6 +41,27 @@ function SqliteAdcApiProvider({ children }: { children: ReactNode }) {
           "SELECT value FROM adc_readings ORDER BY id DESC LIMIT 1",
         );
         return row?.value ?? null;
+      },
+      async listRecentReadings(options) {
+        const limit = Math.max(1, Math.min(2000, options?.limit ?? 120));
+        const sinceMs = options?.sinceMs;
+        const order = options?.order ?? "asc";
+
+        // Fetch newest rows first (fast with ORDER BY id), then re-order for charting.
+        const rows = await db.getAllAsync<{ value: number; created_at: number }>(
+          sinceMs == null
+            ? "SELECT value, created_at FROM adc_readings ORDER BY id DESC LIMIT ?"
+            : "SELECT value, created_at FROM adc_readings WHERE created_at >= ? ORDER BY id DESC LIMIT ?",
+          ...(sinceMs == null ? [limit] : [sinceMs, limit]),
+        );
+
+        const mapped: AdcReading[] = rows.map((r) => ({
+          value: r.value,
+          createdAt: r.created_at,
+        }));
+
+        if (order === "desc") return mapped;
+        return mapped.reverse();
       },
     }),
     [db],

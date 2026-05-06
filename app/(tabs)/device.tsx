@@ -1,12 +1,12 @@
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import React from "react";
-import { ScrollView, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
+import { AdcReadingsChartCard } from "@/components/home/adc-readings-chart-card";
 import { LatestAdcCard } from "@/components/home/latest-adc-card";
 import { MiningSentryBrandHeader } from "@/components/mining-sentry-brand-header";
 import { useBinHeightTransport } from "@/contexts/bin-height-transport-context";
 import { useThemeColor } from "@/hooks/use-theme-color";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import React from "react";
+import { ScrollView, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DeviceScreen() {
   const { displaySource, displayLatestAdc } = useBinHeightTransport();
@@ -27,11 +27,14 @@ export default function DeviceScreen() {
               name={isWireless ? "bluetooth" : "usb"}
               size={22}
               color={iconColor}
-              accessibilityLabel={isWireless ? "Bluetooth connection" : "USB connection"}
+              accessibilityLabel={
+                isWireless ? "Bluetooth connection" : "USB connection"
+              }
             />
           }
         />
         <LatestAdcCard latestAdc={displayLatestAdc} />
+        <AdcReadingsChartCard />
       </ScrollView>
     </SafeAreaView>
   );
